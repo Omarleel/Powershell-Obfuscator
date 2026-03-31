@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerShell-Obfuscator</title>
+    <script src="js/events.js"></script>
+    <script src="js/obfuscator.js" defer></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f0f12; color: #e0e0e0; max-width: 1000px; margin: 0 auto; padding: 20px; }
+        h1 { text-align: center; color: #4facfe; text-shadow: 0 0 10px rgba(79, 172, 254, 0.5); }
+        .container { display: flex; flex-direction: column; gap: 15px; background: #1a1a21; padding: 25px; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        label { font-weight: bold; color: #4facfe; }
+        textarea { width: 100%; height: 200px; padding: 12px; font-family: 'Consolas', monospace; font-size: 13px; border: 1px solid #444; border-radius: 8px; background-color: #25252d; color: #fff; resize: vertical; box-sizing: border-box; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        button { padding: 15px; font-size: 16px; font-weight: bold; color: white; background: linear-gradient(45deg, #00f2fe 0%, #4facfe 100%); border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4); }
+        .btn-copy { background: #27ae60; }
+        .option { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .error { color: #ff5555; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <h1>PowerShell-Obfuscator</h1>
+
+    <div class="container">
+        <label>Script Original:</label>
+        <textarea id="inputArea" placeholder="Pega tu código aquí..."></textarea>
+
+        <div class="controls">
+            <div class="option">
+                <input type="checkbox" id="checkStrings" checked>
+                <label for="checkStrings">Criptografía de Strings (B64/Hex)</label>
+            </div>
+            <div class="option">
+                <input type="checkbox" id="checkFull" checked>
+                <label for="checkFull">Empaquetado GZIP (One-Liner)</label>
+            </div>
+            <div class="option">
+                <input type="checkbox" id="checkOneLineOnly">
+                <label for="checkOneLineOnly">Solo una línea (Sin ofuscar)</label>
+            </div>
+        </div>
+
+        <button onclick="ejecutar()">GENERAR CÓDIGO OFUSCADO</button>
+
+        <label>Resultado:</label>
+        <textarea id="outputArea" readonly></textarea>
+        
+        <button class="btn-copy" onclick="copiar()">COPIAR AL PORTAPAPELES</button>
+        <p id="errorMsg" class="error"></p>
+    </div>
+
+    <script>    
+    </script>
+</body>
+</html>
