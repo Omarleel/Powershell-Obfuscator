@@ -44,43 +44,45 @@ const obfuscate = (code, useStrings, useGzip, oneLineOnly) => {
     }
     script = scriptCollapsed;
 
-    const reservedVars = new Set([
-        'true', 'false', 'null', '_', 'args', 'error', 'pid', 'home', 'host', 'psitem', 'this', 'input',
-        'progresspreference', 'erroractionpreference', 'verbosepreference', 'warningpreference',
-        'debugpreference', 'informationpreference', 'psversiontable', 'psboundparameters',
-        'psscriptroot', 'stacktrace', 'ofs', 'matches', 'lastexitcode', 'profile', 'pwd',
-        'pscmdlet', 'myinvocation'
-    ]);
-    const varMap = new Map();
+    if (!oneLineOnly) {
+        const reservedVars = new Set([
+            'true', 'false', 'null', '_', 'args', 'error', 'pid', 'home', 'host', 'psitem', 'this', 'input',
+            'progresspreference', 'erroractionpreference', 'verbosepreference', 'warningpreference',
+            'debugpreference', 'informationpreference', 'psversiontable', 'psboundparameters',
+            'psscriptroot', 'stacktrace', 'ofs', 'matches', 'lastexitcode', 'profile', 'pwd',
+            'pscmdlet', 'myinvocation'
+        ]);
+        const varMap = new Map();
 
-    script = script.replace(/\$([a-zA-Z0-9_:]+)/g, (match, name) => {
-        let cleanName = name.includes(':') ? name.split(':')[1] : name;
-        let scopeName = name.includes(':') ? name.split(':')[0] + ':' : '';
-        
-        if (reservedVars.has(cleanName.toLowerCase()) || name.toLowerCase().startsWith('env:')) return match;
-        if (!varMap.has(cleanName)) varMap.set(cleanName, randomName());
-        return '$' + scopeName + varMap.get(cleanName);
-    });
+        script = script.replace(/\$([a-zA-Z0-9_:]+)/g, (match, name) => {
+            let cleanName = name.includes(':') ? name.split(':')[1] : name;
+            let scopeName = name.includes(':') ? name.split(':')[0] + ':' : '';
+            
+            if (reservedVars.has(cleanName.toLowerCase()) || name.toLowerCase().startsWith('env:')) return match;
+            if (!varMap.has(cleanName)) varMap.set(cleanName, randomName());
+            return '$' + scopeName + varMap.get(cleanName);
+        });
 
-    for (let i = 0; i < strings.length; i++) {
-        if (strings[i].startsWith('"')) {
-            strings[i] = strings[i].replace(/\$([a-zA-Z0-9_:]+)/g, (match, name) => {
-                let cleanName = name.includes(':') ? name.split(':')[1] : name;
-                let scopeName = name.includes(':') ? name.split(':')[0] + ':' : '';
-                
-                if (reservedVars.has(cleanName.toLowerCase()) || name.toLowerCase().startsWith('env:')) return match;
-                if (!varMap.has(cleanName)) varMap.set(cleanName, randomName());
-                return '$' + scopeName + varMap.get(cleanName);
-            });
+        for (let i = 0; i < strings.length; i++) {
+            if (strings[i].startsWith('"')) {
+                strings[i] = strings[i].replace(/\$([a-zA-Z0-9_:]+)/g, (match, name) => {
+                    let cleanName = name.includes(':') ? name.split(':')[1] : name;
+                    let scopeName = name.includes(':') ? name.split(':')[0] + ':' : '';
+                    
+                    if (reservedVars.has(cleanName.toLowerCase()) || name.toLowerCase().startsWith('env:')) return match;
+                    if (!varMap.has(cleanName)) varMap.set(cleanName, randomName());
+                    return '$' + scopeName + varMap.get(cleanName);
+                });
+            }
         }
-    }
 
-    script = script.replace(/(?<!function\s+)\b([a-zA-Z]+)-([a-zA-Z]+)\b/gi, (m, v, s) => {
-        if (m.startsWith('__STR_')) return m;
-        const fragV = v.split('').join('"+"');
-        const fragS = s.split('').join('"+"');
-        return `&((gcm ("${fragV}"+"-"+"${fragS}")).Name)`;
-    });
+        script = script.replace(/(?<!function\s+)\b([a-zA-Z]+)-([a-zA-Z]+)\b/gi, (m, v, s) => {
+            if (m.startsWith('__STR_')) return m;
+            const fragV = v.split('').join('"+"');
+            const fragS = s.split('').join('"+"');
+            return `&((gcm ("${fragV}"+"-"+"${fragS}")).Name)`;
+        });
+    }
 
     script = script.replace(/__STR_(\d+)__/g, (m, idx) => strings[idx]);
 
